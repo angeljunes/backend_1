@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RCAS Backend - Sistema de Registro y Control de Alertas de Seguridad
 
 ## Descripción
@@ -72,3 +73,6 @@ Para conectar con tu frontend HTML/JavaScript, usa las URLs:
 - `http://localhost:8080/api/location/countries`
 - `http://localhost:8080/api/alerts`
 - etc.
+=======
+# backend_1
+>>>>>>> 68c847f2bdfdf04193c624da42efd85279310624

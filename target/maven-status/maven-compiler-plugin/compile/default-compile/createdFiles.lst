@@ -1,3 +1,4 @@
+com\rcas\entity\User$Role.class
 com\rcas\controller\AuthController.class
 com\rcas\dto\CityDTO.class
 com\rcas\controller\LocationController.class

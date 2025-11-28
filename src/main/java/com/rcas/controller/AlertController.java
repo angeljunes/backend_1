@@ -195,4 +195,123 @@ public class AlertController {
             return ResponseEntity.internalServerError().body(error);
         }
     }
+
+    /**
+     * Método auxiliar para verificar si un usuario es ADMIN
+     */
+    private boolean isUserAdmin(String userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            return user.getRole() == User.Role.ADMIN;
+        }
+        return false;
+    }
+
+    /**
+     * Endpoint para actualizar una alerta (solo ADMIN)
+     * PUT /alerts/{id}?userId=xxx
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAlert(
+            @PathVariable String id,
+            @RequestParam String userId,
+            @RequestBody Map<String, Object> updates) {
+        try {
+            // Validar que el usuario sea ADMIN
+            if (!isUserAdmin(userId)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("error", "Solo los administradores pueden actualizar alertas");
+                return ResponseEntity.status(403).body(error);
+            }
+
+            // Buscar la alerta
+            Optional<Alert> alertOpt = alertRepository.findById(id);
+            if (alertOpt.isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("error", "Alerta no encontrada");
+                return ResponseEntity.status(404).body(error);
+            }
+
+            Alert alert = alertOpt.get();
+
+            // Actualizar campos permitidos
+            if (updates.containsKey("status")) {
+                String statusStr = updates.get("status").toString();
+                alert.setStatus(Alert.Status.valueOf(statusStr.toUpperCase()));
+            }
+
+            if (updates.containsKey("priority")) {
+                String priorityStr = updates.get("priority").toString();
+                alert.setPriority(Alert.Priority.valueOf(priorityStr.toUpperCase()));
+            }
+
+            if (updates.containsKey("title")) {
+                alert.setTitle(updates.get("title").toString());
+            }
+
+            if (updates.containsKey("description")) {
+                alert.setDescription(updates.get("description").toString());
+            }
+
+            // Guardar cambios
+            Alert updatedAlert = alertRepository.save(alert);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Alerta actualizada correctamente");
+            response.put("alert", updatedAlert);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("error", "Error al actualizar alerta: " + e.getMessage());
+            return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    /**
+     * Endpoint para eliminar una alerta (solo ADMIN)
+     * DELETE /alerts/{id}?userId=xxx
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAlert(
+            @PathVariable String id,
+            @RequestParam String userId) {
+        try {
+            // Validar que el usuario sea ADMIN
+            if (!isUserAdmin(userId)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("error", "Solo los administradores pueden eliminar alertas");
+                return ResponseEntity.status(403).body(error);
+            }
+
+            // Verificar que la alerta existe
+            Optional<Alert> alertOpt = alertRepository.findById(id);
+            if (alertOpt.isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("error", "Alerta no encontrada");
+                return ResponseEntity.status(404).body(error);
+            }
+
+            // Eliminar la alerta
+            alertRepository.deleteById(id);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Alerta eliminada correctamente");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("error", "Error al eliminar alerta: " + e.getMessage());
+            return ResponseEntity.status(500).body(error);
+        }
+    }
 }

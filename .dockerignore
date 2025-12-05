@@ -1,0 +1,48 @@
+# Archivos de Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+nbproject/
+nb-configuration.xml
+nbbuild/
+dist/
+nbdist/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentación y archivos de desarrollo
+*.md
+!README.md
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
+*~
+
+# Scripts locales
+run.bat
+*.bat
+*.sh
